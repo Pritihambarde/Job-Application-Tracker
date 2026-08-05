@@ -48,11 +48,10 @@ const JobSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-JobSchema.pre('save', function (next) {
+JobSchema.pre('save', function () {
   if (this.isModified('status')) {
     this.lastStatusChangeAt = new Date();
   }
-  next();
 });
 
 module.exports = mongoose.model('Job', JobSchema);
