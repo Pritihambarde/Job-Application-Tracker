@@ -1,7 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import PasswordField from '../components/PasswordField';
+import { validateEmail } from '../utils/validation';
 import './Auth.css';
+
+function serverMessage(err) {
+  if (!err.response) return "Can't reach the server. Check your connection and try again.";
+  return err.response.data?.msg || 'Something went wrong. Try again.';
+}
 
 export default function Login() {
   const { login } = useAuth();
@@ -17,12 +24,21 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    const emailError = validateEmail(form.email);
+    if (emailError) {
+      setError(emailError);
+      return;
+    }
+    if (!form.password) {
+      setError('Password is required.');
+      return;
+    }
     setSubmitting(true);
     try {
-      await login(form.email, form.password);
+      await login(form.email.trim(), form.password);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.msg || 'Something went wrong. Try again.');
+      setError(serverMessage(err));
     } finally {
       setSubmitting(false);
     }
@@ -40,8 +56,8 @@ export default function Login() {
           <h1 className="auth-title">Welcome back</h1>
           <p className="auth-subtitle">Log in to pick up your search where you left off.</p>
 
-          <form className="auth-form" onSubmit={handleSubmit}>
-            {error && <div className="auth-error">{error}</div>}
+          <form className="auth-form" onSubmit={handleSubmit} noValidate>
+            {error && <div className="auth-error" role="alert">{error}</div>}
 
             <div className="field">
               <label htmlFor="email">Email</label>
@@ -57,22 +73,15 @@ export default function Login() {
               />
             </div>
 
-            <div className="field">
-              <div className="field-label-row">
-                <label htmlFor="password">Password</label>
-                <Link to="/forgot-password" className="field-hint-link">Forgot password?</Link>
-              </div>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                value={form.password}
-                onChange={handleChange}
-                required
-                autoComplete="current-password"
-              />
-            </div>
+            <PasswordField
+              id="password"
+              label="Password"
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Your password"
+              autoComplete="current-password"
+              labelAside={<Link to="/forgot-password" className="field-hint-link">Forgot password?</Link>}
+            />
 
             <button className="auth-submit" type="submit" disabled={submitting}>
               {submitting ? 'Logging in…' : 'Log in'}

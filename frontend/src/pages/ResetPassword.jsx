@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import api from '../api/client';
+import PasswordField from '../components/PasswordField';
+import { validatePassword } from '../utils/validation';
 import './Auth.css';
 
 export default function ResetPassword() {
@@ -15,6 +17,12 @@ export default function ResetPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    const pwError = validatePassword(password);
+    if (pwError) {
+      setError(pwError);
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError("Passwords don't match.");
@@ -52,36 +60,27 @@ export default function ResetPassword() {
               <h1 className="auth-title">Set a new password</h1>
               <p className="auth-subtitle">Choose something you haven't used before.</p>
 
-              <form className="auth-form" onSubmit={handleSubmit}>
-                {error && <div className="auth-error">{error}</div>}
+              <form className="auth-form" onSubmit={handleSubmit} noValidate>
+                {error && <div className="auth-error" role="alert">{error}</div>}
 
-                <div className="field">
-                  <label htmlFor="password">New password</label>
-                  <input
-                    id="password"
-                    type="password"
-                    placeholder="At least 8 characters"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={8}
-                    autoComplete="new-password"
-                  />
-                </div>
+                <PasswordField
+                  id="password"
+                  label="New password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Create a strong password"
+                  autoComplete="new-password"
+                  showStrength
+                />
 
-                <div className="field">
-                  <label htmlFor="confirmPassword">Confirm password</label>
-                  <input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="Repeat your password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    minLength={8}
-                    autoComplete="new-password"
-                  />
-                </div>
+                <PasswordField
+                  id="confirmPassword"
+                  label="Confirm password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Repeat your password"
+                  autoComplete="new-password"
+                />
 
                 <button className="auth-submit" type="submit" disabled={submitting}>
                   {submitting ? 'Updating…' : 'Update password'}

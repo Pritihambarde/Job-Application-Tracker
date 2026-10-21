@@ -201,3 +201,10 @@ Serve `frontend/dist` with any static host (Vercel, Netlify), and deploy `backen
 - Never commit a real `.env` file — `.gitignore` already excludes it. Only `.env.example` files are committed.
 - The reminder scheduler runs daily at 09:00 server time; adjust the cron expression in `backend/jobs/reminderScheduler.js` if needed.
 - If `EMAIL_USER`/`EMAIL_PASS` aren't set, email sending is silently skipped (logged to console) rather than throwing — the app remains fully usable without email configured.
+
+## Authentication & validation
+
+- **Passwords** must be 8–72 characters with an uppercase letter, a lowercase letter, a number and a special character. Enforced on the server (`backend/middleware/validators.js`) and mirrored in the UI (`frontend/src/utils/validation.ts`) with a live strength meter and checklist.
+- **Names** may contain letters (including accented), spaces, hyphens, apostrophes and periods — no numbers or symbols.
+- Passwords are hashed with bcrypt (cost 12); sign-in is rate limited and accounts lock for 15 minutes after 5 failed attempts.
+- Show/hide password toggle, inline field errors, and screen-reader friendly announcements.

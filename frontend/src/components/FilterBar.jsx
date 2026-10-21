@@ -2,7 +2,7 @@ export default function FilterBar({ search, onSearchChange, status, onStatusChan
   return (
     <div className="filter-bar">
       <div className="search-box">
-        <span className="search-icon">⌕</span>
+        <span className="search-icon" aria-hidden="true">⌕</span>
         <input
           type="text"
           placeholder="Search by company or role…"
@@ -11,7 +11,7 @@ export default function FilterBar({ search, onSearchChange, status, onStatusChan
           aria-label="Search applications"
         />
         {search && (
-          <button className="search-clear" onClick={() => onSearchChange('')} aria-label="Clear search">
+          <button type="button" className="search-clear" onClick={() => onSearchChange('')} aria-label="Clear search">
             ×
           </button>
         )}

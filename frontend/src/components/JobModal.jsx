@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
+import { useModalA11y } from '../hooks/useModalA11y';
 
 const STATUS_OPTIONS = ['Applied', 'Interviewing', 'Offer', 'Rejected'];
 
@@ -25,6 +26,8 @@ export default function JobModal({ job, onClose, onSave }) {
   const [form, setForm] = useState(() => initialFormFor(job));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const titleId = useId();
+  const dialogRef = useModalA11y(onClose);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -49,14 +52,22 @@ export default function JobModal({ job, onClose, onSave }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={dialogRef}
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
-          <h2>{job ? 'Edit application' : 'Add application'}</h2>
-          <button className="icon-btn" onClick={onClose} aria-label="Close">×</button>
+          <h2 id={titleId}>{job ? 'Edit application' : 'Add application'}</h2>
+          <button type="button" className="icon-btn" onClick={onClose} aria-label="Close">×</button>
         </div>
 
         <form className="modal-form" onSubmit={handleSubmit}>
-          {error && <div className="auth-error">{error}</div>}
+          {error && <div className="auth-error" role="alert">{error}</div>}
 
           <div className="field">
             <label htmlFor="company">Company</label>

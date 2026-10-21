@@ -2,8 +2,8 @@ const request = require('supertest');
 const app = require('../app');
 const Job = require('../models/Job');
 
-const userA = { name: 'User A', email: 'usera@example.com', password: 'PasswordA1' };
-const userB = { name: 'User B', email: 'userb@example.com', password: 'PasswordB1' };
+const userA = { name: 'User A', email: 'usera@example.com', password: 'PasswordA1!' };
+const userB = { name: 'User B', email: 'userb@example.com', password: 'PasswordB1!' };
 
 async function registerAndGetToken(user) {
   const res = await request(app).post('/api/auth/register').send(user);
