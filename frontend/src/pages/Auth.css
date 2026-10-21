@@ -148,3 +148,88 @@
 .auth-back:hover {
   color: var(--text-dim);
 }
+
+/* ---------- Password field, validation & strength ---------- */
+.password-wrap {
+  position: relative;
+  display: flex;
+}
+.password-wrap input {
+  width: 100%;
+  padding-right: 64px;
+}
+.pw-toggle {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--accent-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.pw-toggle:hover {
+  background: var(--accent-soft);
+}
+
+.field input[aria-invalid='true'] {
+  border-color: #ff5252;
+}
+.field-error {
+  color: #ff8d8d;
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+.pw-help {
+  margin-top: 6px;
+}
+.pw-meter {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+.pw-meter span {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background 0.2s ease;
+}
+.pw-score-1 span:nth-child(-n + 1) { background: #ff5252; }
+.pw-score-2 span:nth-child(-n + 2) { background: #ffb02e; }
+.pw-score-3 span:nth-child(-n + 3) { background: #9acd32; }
+.pw-score-4 span:nth-child(-n + 4) { background: #4cc38a; }
+.pw-strength-label {
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  margin: 6px 0 4px;
+}
+.pw-rules {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 12px;
+  font-size: 0.76rem;
+  color: var(--text-faint);
+}
+.pw-rules li span[aria-hidden] {
+  display: inline-block;
+  width: 1.2em;
+}
+.pw-rules .pw-rule-ok {
+  color: #4cc38a;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

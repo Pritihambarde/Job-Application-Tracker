@@ -1,12 +1,20 @@
-function daysSince(dateStr) {
+import type { Job, JobStatus } from '../types';
+import { JOB_STATUSES } from '../types';
+
+interface JobCardProps {
+  job: Job;
+  onEdit: (job: Job) => void;
+  onDelete: (job: Job) => void;
+  onStatusChange: (job: Job, status: JobStatus) => void;
+}
+
+function daysSince(dateStr?: string): number | null {
   if (!dateStr) return null;
   const diff = Date.now() - new Date(dateStr).getTime();
   return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
 }
 
-const STATUS_OPTIONS = ['Applied', 'Interviewing', 'Offer', 'Rejected'];
-
-export default function JobCard({ job, onEdit, onDelete, onStatusChange }) {
+export default function JobCard({ job, onEdit, onDelete, onStatusChange }: JobCardProps) {
   const days = daysSince(job.appliedDate || job.createdAt);
 
   return (
@@ -17,10 +25,10 @@ export default function JobCard({ job, onEdit, onDelete, onStatusChange }) {
           <p className="job-card-role">{job.role}</p>
         </div>
         <div className="job-card-menu">
-          <button className="icon-btn" onClick={() => onEdit(job)} title="Edit" aria-label="Edit job">
+          <button className="icon-btn" onClick={() => onEdit(job)} title="Edit" aria-label={`Edit ${job.role} at ${job.company}`}>
             ✎
           </button>
-          <button className="icon-btn icon-btn-danger" onClick={() => onDelete(job)} title="Delete" aria-label="Delete job">
+          <button className="icon-btn icon-btn-danger" onClick={() => onDelete(job)} title="Delete" aria-label={`Delete ${job.role} at ${job.company}`}>
             ×
           </button>
         </div>
@@ -30,7 +38,7 @@ export default function JobCard({ job, onEdit, onDelete, onStatusChange }) {
 
       <div className="job-card-bottom">
         <span className="job-card-days">
-          {days === 0 ? 'Today' : days === 1 ? '1 day ago' : `${days} days ago`}
+          {days === null ? '' : days === 0 ? 'Today' : days === 1 ? '1 day ago' : `${days} days ago`}
         </span>
         {job.link && (
           <a href={job.link} target="_blank" rel="noopener noreferrer" className="job-card-link">
@@ -42,10 +50,10 @@ export default function JobCard({ job, onEdit, onDelete, onStatusChange }) {
       <select
         className="job-card-status-select"
         value={job.status}
-        onChange={(e) => onStatusChange(job, e.target.value)}
-        aria-label="Change status"
+        onChange={(e) => onStatusChange(job, e.target.value as JobStatus)}
+        aria-label={`Change status for ${job.role} at ${job.company}`}
       >
-        {STATUS_OPTIONS.map((s) => (
+        {JOB_STATUSES.map((s) => (
           <option key={s} value={s}>{s}</option>
         ))}
       </select>

@@ -5,7 +5,7 @@ const User = require('../models/User');
 const validUser = {
   name: 'Test User',
   email: 'test@example.com',
-  password: 'TestPass123',
+  password: 'TestPass123!',
 };
 
 describe('POST /api/auth/register', () => {
@@ -58,10 +58,45 @@ describe('POST /api/auth/register', () => {
     expect(res.status).toBe(400);
   });
 
+  it('rejects a password with no special character', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({ ...validUser, password: 'TestPass123' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.msg).toMatch(/special character/i);
+  });
+
+  it('rejects a password with no uppercase letter', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({ ...validUser, password: 'testpass123!' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.msg).toMatch(/uppercase/i);
+  });
+
+  it('rejects a name containing numbers', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({ ...validUser, name: 'John123' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.msg).toMatch(/name/i);
+  });
+
+  it('accepts names with hyphens, apostrophes and accents', async () => {
+    const res = await request(app)
+      .post('/api/auth/register')
+      .send({ ...validUser, name: "Mary-Jane O'Neil Zoë" });
+
+    expect(res.status).toBe(201);
+  });
+
   it('rejects a missing name', async () => {
     const res = await request(app)
       .post('/api/auth/register')
-      .send({ email: 'noname@example.com', password: 'TestPass123' });
+      .send({ email: 'noname@example.com', password: 'TestPass123!' });
 
     expect(res.status).toBe(400);
   });
@@ -170,7 +205,7 @@ describe('POST /api/auth/reset-password/:token', () => {
     await request(app).post('/api/auth/forgot-password').send({ email: validUser.email });
 
     const user = await User.findOne({ email: validUser.email });
-    const newPassword = 'BrandNewPass1';
+    const newPassword = 'BrandNewPass1!';
 
     const resetRes = await request(app)
       .post(`/api/auth/reset-password/${user.resetPasswordToken}`)
@@ -188,7 +223,7 @@ describe('POST /api/auth/reset-password/:token', () => {
   it('rejects an invalid token', async () => {
     const res = await request(app)
       .post('/api/auth/reset-password/not-a-real-token')
-      .send({ password: 'BrandNewPass1' });
+      .send({ password: 'BrandNewPass1!' });
 
     expect(res.status).toBe(400);
   });
